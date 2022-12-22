@@ -1,6 +1,19 @@
 import React from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import "../App.css";
-const Chat = () => {
+const Chat = ({ msg, setMsg }) => {
+  const sendMsg = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "messages"), {
+        message: msg,
+      });
+      console.log(docRef.id, docRef.msg);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+  console.log(msg);
   return (
     <div className="flex justify-center align-center w-full h-full my-auto">
       <div
@@ -235,11 +248,14 @@ const Chat = () => {
             <input
               type="text"
               placeholder="Write your message!"
+              onChange={(e) => setMsg(e.target.value)}
+              value={msg}
               className="w-full focus:outline-none bg-transparent border-2 border-transparent focus:border-b-black focus:border-opacity-30 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md
                py-3 transition-all focus:font-mono outline-none"
             />
             <div className="absolute right-0 items-center inset-y-0 sm:flex">
               <button
+                onClick={sendMsg}
                 type="button"
                 className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none "
               >
