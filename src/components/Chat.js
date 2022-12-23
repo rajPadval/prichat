@@ -1,17 +1,42 @@
-import React from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import React, { useState, useEffect } from "react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db, auth } from "../firebaseConfig";
 import "../App.css";
-const Chat = ({ msg, setMsg }) => {
+import { signOut } from "firebase/auth";
+const Chat = ({ msg, setMsg, isAuth, setIsAuth }) => {
+  const [msgList, setMsgList] = useState([]);
+  const postCollectionRef = collection(db, "messages");
+  console.log(postCollectionRef);
+  useEffect(() => {
+    const getMsg = async () => {
+      const data = getDocs(postCollectionRef);
+      console.log(postCollectionRef);
+    };
+    getMsg();
+  }, []);
+
   const sendMsg = async () => {
     try {
-      const docRef = await addDoc(collection(db, "messages"), {
+      const docRef = await addDoc(postCollectionRef, {
         message: msg,
+        author: {
+          name: auth.currentUser.displayName,
+          id: auth.currentUser.uid,
+        },
       });
       console.log(docRef.id, docRef.msg);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+  };
+
+  //Signout function
+  const signUserOut = () => {
+    signOut(auth).then(() => {
+      localStorage.clear();
+      setIsAuth(false);
+      console.log(isAuth);
+    });
   };
   console.log(msg);
   return (
@@ -26,6 +51,12 @@ const Chat = ({ msg, setMsg }) => {
           </span>
           <span className="text-lg text-gray-600 font-mono font-semibold ">
             Chat for fun
+          </span>
+          <span
+            className="text-sm cursor-pointer rounded-md mb-2 border-transparent shadow-sm shadow-cyan-200 hover:bg-cyan-200 px-2 font-semibold border-2"
+            onClick={signUserOut}
+          >
+            Logout
           </span>
         </div>
 
