@@ -3,7 +3,7 @@ import ChatRoom from "./Pages/ChatRoom";
 import Login from "./Pages/Login";
 document.title = "Prichat ";
 const App = () => {
-  const [isAuth, setIsAuth] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
 
   console.log(isAuth);
   return (
